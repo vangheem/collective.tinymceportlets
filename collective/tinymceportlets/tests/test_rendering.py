@@ -52,8 +52,45 @@ class TinyMCEPortetsRendererTests(unittest.TestCase):
         self.failUnless("TEXT INPUT" in self.browser.contents)
         
     def test_should_remove_tag_if_portlet_can_not_be_found(self):
-        pass
+        portal = self.layer['portal']
+        page = portal[portal.invokeFactory('Document', 'testpage')]
+        field = page.getField('text')
+        portletmarkup = portletMarkup('fakemanager-fakeportlet-fakeuid')
+        field.set(page, portletmarkup, mimetype='text/html')
+        page.setTitle('Blah')
+        page.reindexObject()
+        transaction.commit()
+        
+        self.browser.open('http://nohost/plone/testpage')
+        
+        self.failUnless('<img class="TINYMCEPORTLET mce-only' not in self.browser.contents)
+        
         
     def test_should_remove_tag_if_context_can_not_be_found(self):
-        pass
+        portal = self.layer['portal']
+        rightcol = getUtility(IPortletManager, name=u'plone.rightcolumn', context=portal)
+        right = getMultiAdapter((portal, rightcol,), IPortletAssignmentMapping, context=portal)
+        
+        staticportlet = static.Assignment(header=u"Static Portlet", text=u"TEXT INPUT")
+        right[u'staticportlet'] = staticportlet
+        
+        settings = IPortletAssignmentSettings(staticportlet)
+        visible = settings.get('visible', True)
+        settings['visible'] = False
+        
+        class FakeContent:
+            def UID(self): return '1'
+        page = portal[portal.invokeFactory('Document', 'testpage')]
+        hash = portletHash(rightcol, staticportlet, FakeContent())
+        field = page.getField('text')
+        portletmarkup = portletMarkup(hash)
+        field.set(page, portletmarkup, mimetype='text/html')
+        page.setTitle('Blah')
+        page.reindexObject()
+        transaction.commit()
+        
+        self.browser.open('http://nohost/plone/testpage')
+        
+        self.failUnless("TEXT INPUT" not in self.browser.contents)
+        self.failUnless('<img class="TINYMCEPORTLET mce-only' not in self.browser.contents)
         
