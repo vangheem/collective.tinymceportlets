@@ -117,7 +117,7 @@ jq(content_selector + ' input[name="form.buttons.save"]').live('click', function
   if(item.length > 0 && item.hasClass('mce-only')){
     item[0].className = "TINYMCEPORTLET mce-only " + portletHash();
   }else{
-    item.append('<img class="TINYMCEPORTLET mce-only ' + portletHash() + '" src="add-portlets.png" />');
+    item.append('<img class="TINYMCEPORTLET mce-only ' + portletHash() + '" src="++resource++collective.tinymceportlets/add-portlets.png" />');
   }
   $(overlay_selector).overlay().close();
 });
@@ -156,7 +156,7 @@ jq(content_selector + ' form#form').live('submit', function(){ return false; });
 	    ed.addButton('mceportlets', {
 		    title : 'Add/Edit portlet here.',
 		    cmd : 'mceportlets',
-		    image : url + '/add-portlets.png'
+		    image : url + '++resource++collective.tinymceportlets/add-portlets.png'
 	    });
 	  }
   });
