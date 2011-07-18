@@ -14,7 +14,7 @@ from collective.tinymceportlets import PORTLET_CLASS_IDENTIFIER
 from collective.tinymceportlets.utils import decodeHash
 
 from plone.transformchain.interfaces import ITransform
-from plone.portlets.interfaces import IPortletRetriever
+from plone.portlets.interfaces import IPortletRetriever, IPortletAssignmentMapping
 from plone.portlets.interfaces import IPortletManager, IPortletRenderer
 from Products.CMFCore.utils import getToolByName
 
@@ -68,10 +68,18 @@ class TinyMCEPortletsTransform(object):
                         continue
                 manager = getUtility(IPortletManager, name=manager, context=context)
                 retriever = getMultiAdapter((context, manager), IPortletRetriever)
+                portlet = None
                 for portlet in retriever.getPortlets():
                     if portlet['name'] == portletname:
                         portlet = portlet['assignment']
-                
+                if not portlet:
+                    # try and find it on the assignments
+                    assignments = getMultiAdapter((context, manager), IPortletAssignmentMapping)
+                    try:
+                        portlet = assignments[portletname]
+                    except KeyError:
+                        tag.getparent().remove(tag)
+                        continue
                 renderer = queryMultiAdapter((context, self.request, view, manager, portlet), IPortletRenderer)
                 if not renderer:
                     tag.getparent().remove(tag)

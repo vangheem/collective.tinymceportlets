@@ -2,7 +2,7 @@
 <object>
  <resourcetypes purge="False">
   <customplugins purge="False">
-    <element value="mceportlets|/mceportlets.js"/>
+    <element value="mceportlets|/++resource++collective.tinymceportlets/mceportlets.js"/>
   </customplugins>
  </resourcetypes>
  <toolbar>
