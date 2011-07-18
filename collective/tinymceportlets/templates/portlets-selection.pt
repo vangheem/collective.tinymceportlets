@@ -1,0 +1,8 @@
+<h1 tal:content="view/label | nothing" />
+
+<div class="description"
+   tal:condition="view/description | nothing"
+   tal:content="structure view/description">Form description</div>
+
+<metal:block use-macro="context/@@ploneform-macros/titlelessform" />
+      

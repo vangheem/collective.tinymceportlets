@@ -1,0 +1,13 @@
+div.mce-only{
+  width:48px;
+  height:48px;
+  background: url("../add-portlets.png") no-repeat;
+}
+
+#pb_9991 div.pb-ajax{
+  padding:10px 20px;
+}
+
+div.tinymceportlet{
+  width: 325px;
+}

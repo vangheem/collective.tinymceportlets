@@ -1,0 +1,6 @@
+<layers>
+    <layer
+        name="collective.tinymceportlets"
+        interface="collective.tinymceportlets.interfaces.TinyMCEPortletsLayer"
+        />
+</layers>
