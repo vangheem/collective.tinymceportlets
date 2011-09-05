@@ -4,26 +4,25 @@ from zope.schema import Choice
 from plone.formwidget.contenttree import ContentTreeFieldWidget
 from plone.formwidget.contenttree import PathSourceBinder
 from z3c.form import form, button, field
-from plone.z3cform import layout
 from zope.app.pagetemplate import ViewPageTemplateFile as Zope3PageTemplateFile
+
 
 class IPortletSelectionForm(Interface):
     manager = Choice(
         title=u"Portlet Manager",
         vocabulary="collective.tinymceportlets.vocabularies.portletmanagers"
     )
-    
+
     context = Choice(
         title=u"Content Item",
         source=PathSourceBinder()
     )
-    
+
     portlet = Choice(
         title=u"Portlet",
         vocabulary="collective.tinymceportlets.vocabularies.contextportlets"
     )
-    
-    
+
 
 class PortletSelectionAdapter(object):
     implements(IPortletSelectionForm)
@@ -39,7 +38,6 @@ class PortletSelectionAdapter(object):
 
 class PortletSelectionForm(form.Form):
     template = Zope3PageTemplateFile("templates/portlets-selection.pt")
-    
     fields = field.Fields(IPortletSelectionForm)
     fields['context'].widgetFactory = ContentTreeFieldWidget
 
@@ -50,7 +48,7 @@ class PortletSelectionForm(form.Form):
     @button.buttonAndHandler(u'Cancel')
     def handle_cancel(self, action):
         pass
-    
+
     @button.buttonAndHandler(u'Remove')
     def handle_remove(self, action):
         pass

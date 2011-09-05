@@ -9,28 +9,32 @@ _pm_titles = {
     'plone.leftcolumn' : 'Left Column',
     'plone.rightcolumn' : 'Right Column'
 }
-        
+
+
 def PortletManagers(context):
     terms = []
-    for name, pm in [(n, m) for n, m in getUtilitiesFor(IPortletManager) if 'dashboard' not in n]:
-        terms.append(SimpleTerm(value=name, token=name, title=_pm_titles.get(name, name)))
-        
+    utils = getUtilitiesFor(IPortletManager)
+    for name, pm in [(n, m) for n, m in utils if 'dashboard' not in n]:
+        terms.append(SimpleTerm(value=name, token=name,
+                        title=_pm_titles.get(name, name)))
     return SimpleVocabulary(terms)
+
 
 def Portlets(context):
     site = getSite()
-    
-    try: 
+
+    try:
         req = site.REQUEST
     except AttributeError:
         req = context.REQUEST
-        
-    if not req.has_key('manager'):
-        mng_name = [(n, m) for n, m in getUtilitiesFor(IPortletManager) if 'dashboard' not in n][0][0]
+
+    if 'manager' not in req:
+        utils = getUtilitiesFor(IPortletManager)
+        mng_name = [(n, m) for n, m in utils if 'dashboard' not in n][0][0]
     else:
         mng_name = req.get('manager')
 
-    if req.has_key('context'):
+    if 'context' not in req:
         context_req = str(req.get('context')).strip()
         mod_context = context.restrictedTraverse(context_req, None)
         if mod_context is None:
@@ -38,7 +42,7 @@ def Portlets(context):
             mod_context = ref_cat.lookupObject(context_req)
         if mod_context:
             context = mod_context
-    
+
     mng_name = mng_name.strip()
     manager = getUtility(IPortletManager, name=mng_name, context=context)
     retriever = getMultiAdapter((context, manager), IPortletRetriever)
@@ -47,6 +51,5 @@ def Portlets(context):
     for portlet in retriever.getPortlets():
         name = portlet['assignment'].__name__
         terms.append(SimpleTerm(value=name, token=name, title=name))
-        
+
     return SimpleVocabulary(terms)
-    

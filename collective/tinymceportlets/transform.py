@@ -20,15 +20,16 @@ from Products.CMFCore.utils import getToolByName
 
 _portlet_selector = CSSSelector('img.' + PORTLET_CLASS_IDENTIFIER)
 
+
 def add_portlet(tag, request, site, ref_cat, view):
     klass = tag.attrib.get('class', '').replace(PORTLET_CLASS_IDENTIFIER, '').replace('mce-only ', '').strip()
     tag.attrib['class'] = tag.attrib.get('class', '').replace('mce-only ', '')
     manager, portletname, uid = decodeHash(klass)
     # get uid if object supports that.
     context = ref_cat.lookupObject(uid)
-    if not context: # try traversing to it next
+    if not context:  # try traversing to it next
         context = site.restrictedTraverse(uid, None)
-        if not context: # if not found, skip over it..
+        if not context:  # if not found, skip over it..
             tag.getparent().remove(tag)
             return
     manager = getUtility(IPortletManager, name=manager, context=context)
@@ -61,19 +62,19 @@ def add_portlet(tag, request, site, ref_cat, view):
     style = tag.attrib.get('style', '')
     if style:
         style = style.strip().strip(';') + ';'
-    if tag.attrib.has_key('width'):
+    if 'width' in tag.attrib:
         style += 'width:%spx;' % tag.attrib['width'].strip('px')
-    if tag.attrib.has_key('height'):
+    if 'height' in tag.attrib:
         style += 'height:%spx;' % tag.attrib['height'].strip('px')
     html = '<div class="tinymceportlet" style="' + style + '">' + html + '</div>'
     tag.addnext(fromstring(html))
     tag.getparent().remove(tag)
 
+
 class TinyMCEPortletsTransform(object):
     implements(ITransform)
     adapts(Interface, TinyMCEPortletsLayer)
-    
-    order = 8100 # rather early off so other things, like xdv/diazo can leverage it
+    order = 8100  # rather early off so other things, like xdv/diazo can leverage it
 
     def __init__(self, published, request):
         self.published = published
@@ -84,7 +85,7 @@ class TinyMCEPortletsTransform(object):
 
     def transformUnicode(self, result, encoding):
         return self.transformIterable([result], encoding)
-        
+
     def transformIterable(self, result, encoding):
         contentType = self.request.response.getHeader('Content-Type')
         if contentType is None or not contentType.startswith('text/html'):
@@ -93,7 +94,6 @@ class TinyMCEPortletsTransform(object):
         contentEncoding = self.request.response.getHeader('Content-Encoding')
         if contentEncoding and contentEncoding in ('zip', 'deflate', 'compress',):
             return None
-            
         try:
             result = getHTMLSerializer(result, pretty_print=False)
         except (TypeError, etree.ParseError):
@@ -106,5 +106,5 @@ class TinyMCEPortletsTransform(object):
             view = site.restrictedTraverse('@@plone')
             for tag in _portlet_selector(result.tree):
                 add_portlet(tag, self.request, site, ref_cat, view)
-                
+
         return result
