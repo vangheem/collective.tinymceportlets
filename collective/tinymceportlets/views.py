@@ -54,5 +54,4 @@ class PortletSelectionForm(form.Form):
         pass
 
 
-#PortletSelectionFormView = layout.wrap_form(PortletSelectionForm)
 PortletSelectionFormView = PortletSelectionForm
