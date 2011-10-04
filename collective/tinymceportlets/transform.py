@@ -1,4 +1,3 @@
-
 from lxml import etree
 from lxml.cssselect import CSSSelector
 from lxml.html import fromstring
@@ -6,7 +5,10 @@ from lxml.html import fromstring
 from repoze.xmliter.utils import getHTMLSerializer
 
 from zope.interface import implements, Interface
-from zope.component import adapts, getUtility, getMultiAdapter, queryMultiAdapter
+from zope.component import adapts
+from zope.component import getUtility
+from zope.component import getMultiAdapter
+from zope.component import queryMultiAdapter
 from zope.site.hooks import getSite
 
 from collective.tinymceportlets.interfaces import TinyMCEPortletsLayer
@@ -14,7 +16,8 @@ from collective.tinymceportlets import PORTLET_CLASS_IDENTIFIER
 from collective.tinymceportlets.utils import decodeHash
 
 from plone.transformchain.interfaces import ITransform
-from plone.portlets.interfaces import IPortletRetriever, IPortletAssignmentMapping
+from plone.portlets.interfaces import IPortletRetriever
+from plone.portlets.interfaces import IPortletAssignmentMapping
 from plone.portlets.interfaces import IPortletManager, IPortletRenderer
 from Products.CMFCore.utils import getToolByName
 
@@ -22,7 +25,9 @@ _portlet_selector = CSSSelector('img.' + PORTLET_CLASS_IDENTIFIER)
 
 
 def add_portlet(tag, request, site, ref_cat, view):
-    klass = tag.attrib.get('class', '').replace(PORTLET_CLASS_IDENTIFIER, '').replace('mce-only ', '').strip()
+    klass = tag.attrib.get('class', '').\
+                replace(PORTLET_CLASS_IDENTIFIER, '').\
+                replace('mce-only ', '').strip()
     tag.attrib['class'] = tag.attrib.get('class', '').replace('mce-only ', '')
     manager, portletname, uid = decodeHash(klass)
     # get uid if object supports that.
@@ -40,13 +45,15 @@ def add_portlet(tag, request, site, ref_cat, view):
             portlet = portlet['assignment']
     if not portlet:
         # try and find it on the assignments
-        assignments = getMultiAdapter((context, manager), IPortletAssignmentMapping)
+        assignments = getMultiAdapter((context, manager),
+                                      IPortletAssignmentMapping)
         try:
             portlet = assignments[portletname]
         except KeyError:
             tag.getparent().remove(tag)
             return
-    renderer = queryMultiAdapter((context, request, view, manager, portlet), IPortletRenderer)
+    renderer = queryMultiAdapter((context, request, view, manager, portlet),
+                                 IPortletRenderer)
     if not renderer:
         tag.getparent().remove(tag)
         return
@@ -66,7 +73,9 @@ def add_portlet(tag, request, site, ref_cat, view):
         style += 'width:%spx;' % tag.attrib['width'].strip('px')
     if 'height' in tag.attrib:
         style += 'height:%spx;' % tag.attrib['height'].strip('px')
-    html = '<div class="tinymceportlet" style="' + style + '">' + html + '</div>'
+    html = '<div class="tinymceportlet" style="%s">%s</div>' % (
+        style, html
+    )
     tag.addnext(fromstring(html))
     tag.getparent().remove(tag)
 
@@ -74,7 +83,8 @@ def add_portlet(tag, request, site, ref_cat, view):
 class TinyMCEPortletsTransform(object):
     implements(ITransform)
     adapts(Interface, TinyMCEPortletsLayer)
-    order = 8100  # rather early off so other things, like xdv/diazo can leverage it
+    # rather early off so other things, like xdv/diazo can leverage it
+    order = 8100
 
     def __init__(self, published, request):
         self.published = published
@@ -91,8 +101,8 @@ class TinyMCEPortletsTransform(object):
         if contentType is None or not contentType.startswith('text/html'):
             return None
 
-        contentEncoding = self.request.response.getHeader('Content-Encoding')
-        if contentEncoding and contentEncoding in ('zip', 'deflate', 'compress',):
+        ce = self.request.response.getHeader('Content-Encoding')
+        if ce and ce in ('zip', 'deflate', 'compress'):
             return None
         try:
             result = getHTMLSerializer(result, pretty_print=False)

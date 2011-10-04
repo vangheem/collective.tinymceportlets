@@ -6,8 +6,8 @@ from plone.portlets.interfaces import IPortletManager, IPortletRetriever
 from Products.CMFCore.utils import getToolByName
 
 _pm_titles = {
-    'plone.leftcolumn' : 'Left Column',
-    'plone.rightcolumn' : 'Right Column'
+    'plone.leftcolumn': 'Left Column',
+    'plone.rightcolumn': 'Right Column'
 }
 
 
