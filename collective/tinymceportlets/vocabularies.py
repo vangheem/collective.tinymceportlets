@@ -42,7 +42,8 @@ def Portlets(context):
             mod_context = ref_cat.lookupObject(context_req)
         if mod_context:
             context = mod_context
-
+    else:
+        context = site.restrictedTraverse(str(req.get('context')))
     mng_name = mng_name.strip()
     manager = getUtility(IPortletManager, name=mng_name, context=context)
     retriever = getMultiAdapter((context, manager), IPortletRetriever)
