@@ -156,7 +156,7 @@ jq(content_selector + ' form#form').live('submit', function(){ return false; });
 	    ed.addButton('mceportlets', {
 		    title : 'Add/Edit portlet here.',
 		    cmd : 'mceportlets',
-		    image : url + '++resource++collective.tinymceportlets/add-portlets.png'
+		    image : url + '/add-portlets.png'
 	    });
 	  }
   });
