@@ -43,6 +43,7 @@ def add_portlet(tag, request, site, ref_cat, view):
     for portlet in retriever.getPortlets():
         if portlet['name'] == portletname:
             portlet = portlet['assignment']
+            break
     if not portlet:
         # try and find it on the assignments
         assignments = getMultiAdapter((context, manager),
