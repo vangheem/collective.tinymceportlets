@@ -6,3 +6,7 @@
 div.tinymceportlet{
   width: 325px;
 }
+
+div.contenttreeWindow{
+	z-index: 999999;
+}
